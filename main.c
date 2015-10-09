@@ -36,15 +36,15 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    /* build the entry */
-    entry *pHead, *e;
-    pHead = (entry *) malloc(sizeof(entry));
-    printf("size of entry : %lu bytes\n", sizeof(entry));
+    /* build the lastNameEntry */
+    lastNameEntry *pHead, *e;
+    pHead = (lastNameEntry *) malloc(sizeof(lastNameEntry));
+    printf("size of lastNameEntry : %lu bytes\n", sizeof(lastNameEntry));
     e = pHead;
     e->pNext = NULL;
 
 #if defined(__GNUC__)
-    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
+    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(lastNameEntry));
 #endif
     clock_gettime(CLOCK_REALTIME, &start);
     while (fgets(line, sizeof(line), fp)) {
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     assert(0 == strcmp(findName(input, e)->lastName, "zyxel"));
 
 #if defined(__GNUC__)
-    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
+    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(lastNameEntry));
 #endif
     /* compute the execution time */
     clock_gettime(CLOCK_REALTIME, &start);
