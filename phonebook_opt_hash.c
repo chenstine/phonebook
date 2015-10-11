@@ -26,11 +26,13 @@ entry *findName(char lastName[], hashTable *ht)
 {
     uint32_t hashIndex = hash(lastName, ht);
     entry *pHead = ht->buckets[hashIndex];
+	count = 1;
 
     while (pHead != NULL) {
         if (strcasecmp(lastName, pHead->lastName) == 0)
             return pHead;
         pHead = pHead->pNext;
+		++count;
     }
 
     return NULL;

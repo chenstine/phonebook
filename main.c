@@ -7,7 +7,7 @@
 #include IMPL
 
 #define DICT_FILE "./dictionary/words.txt"
-#define HASH_TABLE_SIZE 7919
+#define HASH_TABLE_SIZE 17389
 #define FIND_NUM 8
 
 static double diff_in_second(struct timespec t1, struct timespec t2)
@@ -91,14 +91,14 @@ int main(int argc, char *argv[])
     	assert(findName(input[i], e) &&
         	"Did you implement findName() in " IMPL "?");
    		assert(0 == strcmp(findName(input[i], e)->lastName, input[i]));
-		printf("%s is found!\n", input[i]);
+		printf("finding times:%3d\t%s is found!\n", count, input[i]);
 	}
 #elif defined(OPTHASH)
 	for (i = 0; i < FIND_NUM; ++i) {
     	assert(findName(input[i], ht) &&
         	"Did you implement findName() in " IMPL "?");
    		assert(0 == strcmp(findName(input[i], ht)->lastName, input[i]));
-		printf("%s is found!\n", input[i]);
+		printf("finding times:%3d\t%s is found!\n", count, input[i]);
 	}
 #endif
 

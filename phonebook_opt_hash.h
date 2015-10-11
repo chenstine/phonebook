@@ -32,5 +32,6 @@ typedef struct __HASH_TABLE {
 hashTable *createHashTable(int tableSize);
 entry *findName(char lastname[], hashTable *ht);
 void append(char lastName[], hashTable *ht);
+int count;
 
 #endif
