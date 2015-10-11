@@ -7,6 +7,8 @@
 #include IMPL
 
 #define DICT_FILE "./dictionary/words.txt"
+#define HASH_TABLE_SIZE 7919
+#define FIND_NUM 8
 
 static double diff_in_second(struct timespec t1, struct timespec t2)
 {
@@ -36,16 +38,18 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    /* build the lastNameEntry */
-    lastNameEntry *pHead, *e;
-    pHead = (lastNameEntry *) malloc(sizeof(lastNameEntry));
-    printf("size of lastNameEntry : %lu bytes\n", sizeof(lastNameEntry));
+    /* build the entry */
+    entry *pHead, *e;
+    pHead = (entry *) malloc(sizeof(entry));
+    printf("size of entry : %lu bytes\n", sizeof(entry));
     e = pHead;
     e->pNext = NULL;
 
 #if defined(__GNUC__)
-    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(lastNameEntry));
+    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
+
+#if defined(ORIG) || defined(OPT)
     clock_gettime(CLOCK_REALTIME, &start);
     while (fgets(line, sizeof(line), fp)) {
         while (line[i] != '\0')
@@ -56,26 +60,61 @@ int main(int argc, char *argv[])
     }
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time1 = diff_in_second(start, end);
+#elif defined(OPTHASH)
+    /* build the hashTable */
+    hashTable *ht = createHashTable(HASH_TABLE_SIZE);
+
+    clock_gettime(CLOCK_REALTIME, &start);
+    while (fgets(line, sizeof(line), fp)) {
+        while (line[i] != '\0')
+            i++;
+        line[i - 1] = '\0';
+        i = 0;
+        append(line, ht);
+    }
+    clock_gettime(CLOCK_REALTIME, &end);
+    cpu_time1 = diff_in_second(start, end);
+#endif
 
     /* close file as soon as possible */
     fclose(fp);
 
-    e = pHead;
-
     /* the givn last name to find */
-    char input[MAX_LAST_NAME_SIZE] = "zyxel";
+    char input[FIND_NUM][MAX_LAST_NAME_SIZE] = {
+		"uninvolved", "zyxel", "whiteshank", "odontomous",
+		"pungoteague", "reweighted", "xiphisternal", "yakattalo"};
+
     e = pHead;
 
-    assert(findName(input, e) &&
-           "Did you implement findName() in " IMPL "?");
-    assert(0 == strcmp(findName(input, e)->lastName, "zyxel"));
+#if defined(ORIG) || defined(OPT)
+	for (i = 0; i < FIND_NUM; ++i) {
+    	assert(findName(input[i], e) &&
+        	"Did you implement findName() in " IMPL "?");
+   		assert(0 == strcmp(findName(input[i], e)->lastName, input[i]));
+		printf("%s is found!\n", input[i]);
+	}
+#elif defined(OPTHASH)
+	for (i = 0; i < FIND_NUM; ++i) {
+    	assert(findName(input[i], ht) &&
+        	"Did you implement findName() in " IMPL "?");
+   		assert(0 == strcmp(findName(input[i], ht)->lastName, input[i]));
+		printf("%s is found!\n", input[i]);
+	}
+#endif
 
 #if defined(__GNUC__)
-    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(lastNameEntry));
+    __builtin___clear_cache((char *) pHead, (char *) pHead + sizeof(entry));
 #endif
+
     /* compute the execution time */
     clock_gettime(CLOCK_REALTIME, &start);
-    findName(input, e);
+
+#if defined(ORIG) || defined(OPT)
+    for (i = 0; i < FIND_NUM; ++i) findName(input[i], e);
+#elif defined(OPTHASH)
+    for (i = 0; i < FIND_NUM; ++i) findName(input[i], ht);
+#endif
+
     clock_gettime(CLOCK_REALTIME, &end);
     cpu_time2 = diff_in_second(start, end);
 
